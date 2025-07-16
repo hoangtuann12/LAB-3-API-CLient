@@ -1,0 +1,127 @@
+﻿@{
+    ViewData["Title"] = "Login";
+}
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f3f3f3;
+    }
+
+    .login-container {
+        width: 100%;
+        max-width: 400px;
+        margin: 60px auto;
+        padding: 30px;
+        background-color: white;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        border-radius: 10px;
+    }
+
+    h2 {
+        text-align: center;
+        margin-bottom: 20px;
+        color: #333;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 5px;
+        color: #444;
+    }
+
+    input[type="email"],
+    input[type="password"] {
+        width: 100%;
+        padding: 10px;
+        box-sizing: border-box;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+
+    .btn {
+        width: 100%;
+        padding: 10px;
+        margin-top: 10px;
+        border: none;
+        border-radius: 5px;
+        color: white;
+        background-color: #007BFF;
+        cursor: pointer;
+        font-size: 16px;
+    }
+
+        .btn:hover {
+            background-color: #0056b3;
+        }
+
+    .btn-secondary {
+        background-color: #6c757d;
+    }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+
+    #result {
+        text-align: center;
+        margin-top: 15px;
+        font-weight: bold;
+    }
+</style>
+
+<div class="login-container">
+    <h2>Login</h2>
+    <form id="loginForm">
+        <div class="form-group">
+            <label>Email:</label>
+            <input type="email" id="email" name="email" required />
+        </div>
+        <div class="form-group">
+            <label>Password:</label>
+            <input type="password" id="password" name="password" required />
+        </div>
+        <button type="submit" class="btn">Login</button>
+        <button type="button" class="btn btn-secondary" id="goToRegisterBtn">Register</button>
+    </form>
+    <div id="result"></div>
+</div>
+
+@section Scripts {
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            const response = await fetch('http://localhost:5071/api/login/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            });
+
+            const resultDiv = document.getElementById('result');
+            if (response.ok) {
+                const data = await response.json();
+                resultDiv.style.color = "green";
+                resultDiv.textContent = "Login successful! Welcome " + data.accountName;
+
+                setTimeout(() => {
+                    window.location.href = '/Home/Index';
+                }, 1000);
+            } else {
+                const error = await response.text();
+                resultDiv.style.color = "red";
+                resultDiv.textContent = error || "Login failed!";
+            }
+        });
+
+        document.getElementById('goToRegisterBtn').addEventListener('click', function () {
+            window.location.href = '/Login/Register';
+        });
+    </script>
+}
